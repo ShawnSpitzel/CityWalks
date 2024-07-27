@@ -55,7 +55,7 @@ async function fetchWalkabilityIndex(lat, lon) {
     // Calculate a dynamic range based on the latitude
     const latRange = 1000; // This can be adjusted to a smaller number if your data points are close together
     const lonRange = 1000; // This can be adjusted to a smaller number if your data points are close together
-
+    //idk why its gotta be this way but it wont work otherwise
     walkabilityDb.get(query, [lat - latRange, lat + latRange, lon - lonRange, lon + lonRange, lat, lon], (err, row) => {
       if (err) {
         console.error('Database error:', err);
