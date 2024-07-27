@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ReactMapGL from "react-map-gl";
 import Map from "react-map-gl"
+import Header from "./components/ui/Header.jsx"
 
 import "./App.css";
 
@@ -18,6 +19,7 @@ function App() {
 
   return (
     <>
+    <Header></Header>
       <div>
         <Map
         mapboxAccessToken={TOKEN}

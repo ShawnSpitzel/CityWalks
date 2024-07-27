@@ -25,3 +25,6 @@ dist-ssr
 
 # misc
 .env
+
+# Mock data
+mock_data.json
