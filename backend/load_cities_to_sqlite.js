@@ -1,30 +1,29 @@
 const sqlite3 = require('sqlite3').verbose();
 const csv = require('csv-parser');
 const fs = require('fs');
-
-const db = new sqlite3.Database('./worldcities.db');
+const db = new sqlite3.Database('./us_cities.db');
 
 db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS cities (
-    city TEXT,
-    city_ascii TEXT,
-    lat REAL,
-    lng REAL,
-    country TEXT,
-    iso2 TEXT,
-    iso3 TEXT,
-    admin_name TEXT,
-    capital TEXT,
-    population INTEGER,
-    id INTEGER PRIMARY KEY
-  )`);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS cities (
+      id INTEGER PRIMARY KEY,
+      city TEXT,
+      state_code TEXT,
+      state_name TEXT,
+      county TEXT,
+      latitude REAL,
+      longitude REAL
+    )
+  `);
 
-  const stmt = db.prepare(`INSERT INTO cities (city, city_ascii, lat, lng, country, iso2, iso3, admin_name, capital, population, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+  const stmt = db.prepare(`
+    INSERT INTO cities (id, city, state_code, state_name, county, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
 
-  fs.createReadStream('worldcities.csv')
+  fs.createReadStream('us_cities.csv')
     .pipe(csv())
     .on('data', (row) => {
-      stmt.run(row.city, row.city_ascii, row.lat, row.lng, row.country, row.iso2, row.iso3, row.admin_name, row.capital, row.population, row.id);
+      stmt.run(row.ID, row.CITY, row.STATE_CODE, row.STATE_NAME, row.COUNTY, parseFloat(row.LATITUDE), parseFloat(row.LONGITUDE));
     })
     .on('end', () => {
       stmt.finalize();

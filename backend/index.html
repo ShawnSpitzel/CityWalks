@@ -7,25 +7,75 @@
     <script>
         async function fetchWalkability() {
             const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
             const radius = document.getElementById('radius').value;
-            const response = await fetch(`/walkability?city=${encodeURIComponent(city)}&radius=${encodeURIComponent(radius)}`);
+            const response = await fetch(`/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${encodeURIComponent(radius)}`);
             const data = await response.json();
             document.getElementById('results').innerText = JSON.stringify(data, null, 2);
+            updateWalkScoreWidget(city, state);
+        }
+
+        function updateWalkScoreWidget(city, state) {
+            const ws_address = `${city}, ${state}`;
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.innerHTML = `
+                var ws_wsid = 'g1a79612917f1461d9ec9b0a1ef8fa784';
+                var ws_address = '${ws_address}';
+                var ws_format = 'tall';
+                var ws_width = '300';
+                var ws_height = '350';
+            `;
+            const widgetDiv = document.getElementById('ws-walkscore-tile');
+            widgetDiv.innerHTML = ''; // Clear the previous widget
+            widgetDiv.appendChild(script);
+
+            const scriptSrc = document.createElement('script');
+            scriptSrc.type = 'text/javascript';
+            scriptSrc.src = 'http://www.walkscore.com/tile/show-walkscore-tile.php';
+            widgetDiv.appendChild(scriptSrc);
         }
     </script>
+    <style>
+        #container {
+            display: flex;
+        }
+        #form-container {
+            flex: 1;
+        }
+        #results {
+            flex: 2;
+            margin-left: 20px;
+        }
+        #ws-walkscore-tile {
+            position: relative;
+            text-align: left;
+        }
+        #ws-walkscore-tile * {
+            float: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Walkability Index</h1>
-    <form onsubmit="event.preventDefault(); fetchWalkability();">
-        <label for="city">City:</label>
-        <input type="text" id="city" name="city" required>
-        <br>
-        <label for="radius">Radius (miles):</label>
-        <input type="number" id="radius" name="radius" required>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-    <h2>Results:</h2>
-    <pre id="results"></pre>
+    <div id="container">
+        <div id="form-container">
+            <form onsubmit="event.preventDefault(); fetchWalkability();">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+                <br>
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" required>
+                <br>
+                <label for="radius">Radius (miles):</label>
+                <input type="number" id="radius" name="radius" required>
+                <br>
+                <button type="submit">Submit</button>
+            </form>
+            <h2>Results:</h2>
+            <pre id="results"></pre>
+        </div>
+        <div id="ws-walkscore-tile"></div>
+    </div>
 </body>
 </html>

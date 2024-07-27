@@ -5,7 +5,7 @@ const path = require('path');
 const geolib = require('geolib'); // Importing the geolib package
 const app = express();
 const port = process.env.PORT || 3000;
-const citiesDb = new sqlite3.Database('./worldcities.db');
+const citiesDb = new sqlite3.Database('./us_cities.db');
 const walkabilityDb = new sqlite3.Database('./walkability.db');
 
 app.get('/', (req, res) => {
@@ -14,11 +14,17 @@ app.get('/', (req, res) => {
 
 // Endpoint to get walkability index for all cities within a radius
 app.get('/walkability', async (req, res) => {
-  const { city, radius } = req.query;
+  const { city, state, radius } = req.query;
+
+  console.log(`Query parameters - City: ${city}, State: ${state}, Radius: ${radius}`);
+
+  if (!city || !state || !radius) {
+    return res.status(400).json({ error: 'Missing required query parameters: city, state, radius' });
+  }
 
   try {
     // Get coordinates for the city
-    const cityCoords = await getCityCoordinates(city);
+    const cityCoords = await getCityCoordinates(city, state);
     console.log(`City Coordinates: ${JSON.stringify(cityCoords)}`);
 
     // Get all cities within the radius
@@ -29,7 +35,7 @@ app.get('/walkability', async (req, res) => {
     const walkabilityIndexes = await Promise.all(
       nearbyCities.map(async city => {
         const index = await fetchWalkabilityIndex(city.lat, city.lng);
-        return { city: city.name, lat: city.lat, lon: city.lng, walkability_index: index };
+        return { city: city.name, state: city.state, lat: city.lat, lon: city.lng, walkability_index: index };
       })
     );
 
@@ -53,9 +59,9 @@ async function fetchWalkabilityIndex(lat, lon) {
     `;
     
     // Calculate a dynamic range based on the latitude
-    const latRange = 1000; // This can be adjusted to a smaller number if your data points are close together
-    const lonRange = 1000; // This can be adjusted to a smaller number if your data points are close together
-    //idk why its gotta be this way but it wont work otherwise
+    const latRange = 10; // This can be adjusted to a smaller number if your data points are close together
+    const lonRange = 10; // This can be adjusted to a smaller number if your data points are close together
+
     walkabilityDb.get(query, [lat - latRange, lat + latRange, lon - lonRange, lon + lonRange, lat, lon], (err, row) => {
       if (err) {
         console.error('Database error:', err);
@@ -68,14 +74,15 @@ async function fetchWalkabilityIndex(lat, lon) {
 }
 
 // Function to get city coordinates using the cities database
-async function getCityCoordinates(city) {
+async function getCityCoordinates(city, state) {
+  console.log(`Querying coordinates for city: ${city}, state: ${state}`);
   return new Promise((resolve, reject) => {
-    citiesDb.get('SELECT lat, lng FROM cities WHERE LOWER(city) = LOWER(?) LIMIT 1', [city], (err, row) => {
+    citiesDb.get('SELECT latitude, longitude FROM cities WHERE LOWER(city) = LOWER(?) AND (LOWER(state_code) = LOWER(?) OR LOWER(state_name) = LOWER(?)) LIMIT 1', [city, state, state], (err, row) => {
       if (err) {
         console.error('Database error:', err);
         reject(err);
       } else if (row) {
-        resolve({ lat: row.lat, lon: row.lng });
+        resolve({ lat: row.latitude, lon: row.longitude });
       } else {
         reject(new Error('City not found'));
       }
@@ -86,7 +93,7 @@ async function getCityCoordinates(city) {
 // Function to get nearby cities using the cities database
 async function getNearbyCities(coords, radius) {
   return new Promise((resolve, reject) => {
-    citiesDb.all('SELECT city, lat, lng FROM cities', [], (err, rows) => {
+    citiesDb.all('SELECT city, state_code, state_name, latitude, longitude FROM cities', [], (err, rows) => {
       if (err) {
         console.error('Database error:', err);
         reject(err);
@@ -94,13 +101,14 @@ async function getNearbyCities(coords, radius) {
         const nearbyCities = rows.filter(row => {
           const distance = geolib.getDistance(
             { latitude: coords.lat, longitude: coords.lon },
-            { latitude: row.lat, longitude: row.lng }
+            { latitude: row.latitude, longitude: row.longitude }
           );
           return distance <= radius * 1609.34; // Convert miles to meters
         }).map(row => ({
           name: row.city,
-          lat: row.lat,
-          lng: row.lng,
+          state: row.state_code, // or row.state_name, depending on your preference
+          lat: row.latitude,
+          lng: row.longitude,
         }));
         resolve(nearbyCities);
       }
