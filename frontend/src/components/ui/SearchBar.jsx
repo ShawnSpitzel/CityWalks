@@ -5,14 +5,17 @@ export default function SearchBar() {
   const [cityName, setCityName] = useState("");
   const [distance, setDistance] = useState("");
 
+  // Handles changes within the search bar
   const handleChange = (e) => {
     setCityName(e.target.value);
   };
 
+    // Handles changes for the dropdown
   const handleValue = (e) => {
     setDistance(e.target.value);
   };
 
+  // Console logs the inputted values
   const onSubmit = (e) => {
     e.preventDefault();
     console.log(cityName);

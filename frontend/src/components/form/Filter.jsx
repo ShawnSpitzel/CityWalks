@@ -1,4 +1,5 @@
 export default function Filter({ onChange }) {
+    // Dropdown Menu
     return (
       <div className="">
         <select
@@ -7,6 +8,7 @@ export default function Filter({ onChange }) {
           defaultValue=""
          
         >
+        {/* Placeholder value for light text */}
           <option value="" disabled>Select distance</option>
           <option value={5}>5 miles</option>
           <option value={10}>10 miles</option>
