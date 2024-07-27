@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactMapGL from "react-map-gl";
 import Map from "react-map-gl"
 import Header from "./components/ui/Header.jsx"
+import List from "./store/List.jsx"
 
 import "./App.css";
 
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
     <Header></Header>
+    <List></List>
       <div>
         <Map
         mapboxAccessToken={TOKEN}

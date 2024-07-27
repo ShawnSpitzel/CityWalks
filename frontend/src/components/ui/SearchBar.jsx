@@ -15,9 +15,15 @@ export default function SearchBar() {
     setDistance(e.target.value);
   };
 
+  const fetchWalkability = async() => {
+    const response = await fetch(`/walkability?city=${encodeURIComponent(cityName)}&radius=${encodeURIComponent(distance)}`);
+    const data = await response.json();
+    console.log(data)
+}
   // Console logs the inputted values
   const onSubmit = (e) => {
     e.preventDefault();
+    fetchWalkability();
     console.log(cityName);
     console.log(distance);
   };
