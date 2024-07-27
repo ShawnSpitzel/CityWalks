@@ -1,13 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const axios = require('axios');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const geolib = require('geolib'); // Importing the geolib package
 const app = express();
 const port = process.env.PORT || 3000;
-const db = new sqlite3.Database('./walkability.db');
+const citiesDb = new sqlite3.Database('./worldcities.db');
+const walkabilityDb = new sqlite3.Database('./walkability.db');
 
-// Serve the HTML file
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -40,7 +40,7 @@ app.get('/walkability', async (req, res) => {
   }
 });
 
-// Function to fetch walkability index from SQLite database
+// Function to fetch walkability index from the walkability database
 async function fetchWalkabilityIndex(lat, lon) {
   return new Promise((resolve, reject) => {
     const query = `
@@ -51,10 +51,12 @@ async function fetchWalkabilityIndex(lat, lon) {
       ORDER BY ABS(lat - ?) + ABS(lon - ?)
       LIMIT 1
     `;
-    const latRange = 10000; // Adjust the range as needed
-    const lonRange = 10000; // Adjust the range as needed
+    
+    // Calculate a dynamic range based on the latitude
+    const latRange = 1000; // This can be adjusted to a smaller number if your data points are close together
+    const lonRange = 1000; // This can be adjusted to a smaller number if your data points are close together
 
-    db.get(query, [lat - latRange, lat + latRange, lon - lonRange, lon + lonRange, lat, lon], (err, row) => {
+    walkabilityDb.get(query, [lat - latRange, lat + latRange, lon - lonRange, lon + lonRange, lat, lon], (err, row) => {
       if (err) {
         console.error('Database error:', err);
         reject(err);
@@ -65,83 +67,46 @@ async function fetchWalkabilityIndex(lat, lon) {
   });
 }
 
-// Function to get city coordinates using Google Maps Geocoding API
+// Function to get city coordinates using the cities database
 async function getCityCoordinates(city) {
-  try {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    console.log('Using API Key:', apiKey);
-
-    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-      params: {
-        address: city,
-        key: apiKey
+  return new Promise((resolve, reject) => {
+    citiesDb.get('SELECT lat, lng FROM cities WHERE LOWER(city) = LOWER(?) LIMIT 1', [city], (err, row) => {
+      if (err) {
+        console.error('Database error:', err);
+        reject(err);
+      } else if (row) {
+        resolve({ lat: row.lat, lon: row.lng });
+      } else {
+        reject(new Error('City not found'));
       }
     });
-    console.log(`Geocoding API response: ${JSON.stringify(response.data)}`);
-    if (response.data.status !== 'OK') {
-      throw new Error(`Geocoding API error: ${response.data.status}`);
-    }
-    const location = response.data.results[0].geometry.location;
-    return { lat: location.lat, lon: location.lng };
-  } catch (error) {
-    console.error('Error with Geocoding API request:', error);
-    throw error;
-  }
+  });
 }
 
-// Function to get nearby cities using Google Maps Places API with pagination and visited cities set
+// Function to get nearby cities using the cities database
 async function getNearbyCities(coords, radius) {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    const places = new Set();
-    const visited = new Set();
-    let nextPageToken = '';
-    const radiusMeters = radius * 1609.34; // Convert miles to meters
-  
-    while (true) {
-      const params = {
-        location: `${coords.lat},${coords.lon}`,
-        radius: radiusMeters, // Use the radius converted to meters
-        type: 'locality',
-        key: apiKey,
-      };
-  
-      if (nextPageToken) {
-        params.pagetoken = nextPageToken;
+  return new Promise((resolve, reject) => {
+    citiesDb.all('SELECT city, lat, lng FROM cities', [], (err, rows) => {
+      if (err) {
+        console.error('Database error:', err);
+        reject(err);
+      } else {
+        const nearbyCities = rows.filter(row => {
+          const distance = geolib.getDistance(
+            { latitude: coords.lat, longitude: coords.lon },
+            { latitude: row.lat, longitude: row.lng }
+          );
+          return distance <= radius * 1609.34; // Convert miles to meters
+        }).map(row => ({
+          name: row.city,
+          lat: row.lat,
+          lng: row.lng,
+        }));
+        resolve(nearbyCities);
       }
-  
-      try {
-        const response = await axios.get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', { params });
-        console.log(`Places API response: ${JSON.stringify(response.data)}`);
-  
-        response.data.results.forEach(place => {
-          const placeId = place.place_id;
-          if (!visited.has(placeId)) {
-            visited.add(placeId);
-            places.add({
-              name: place.name,
-              lat: place.geometry.location.lat,
-              lng: place.geometry.location.lng,
-            });
-          }
-        });
-  
-        if (response.data.next_page_token) {
-          // Google Places API next_page_token requires a short delay before the next request
-          nextPageToken = response.data.next_page_token;
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        } else {
-          break;
-        }
-      } catch (error) {
-        console.error('Error with Places API request:', error);
-        break;
-      }
-    }
-  
-    return Array.from(places);
-  }
-  
-  
+    });
+  });
+}
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
