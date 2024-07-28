@@ -7,7 +7,6 @@ const SearchBar = ({ onSearch }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSearch(cityState, radius);
-    
   };
 
   return (
