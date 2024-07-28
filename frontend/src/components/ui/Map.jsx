@@ -33,9 +33,14 @@ const Map = ({ coordinates, radius, cities }) => {
     console.log('Updating map center to:', coordinates);
     map.current.setCenter([coordinates.lng, coordinates.lat]);
 
-    // Remove existing circle layer if it exists
-    if (map.current.getSource('circle')) {
+    // Remove existing circle layer and source if they exist
+    if (map.current.getLayer('circle')) {
       map.current.removeLayer('circle');
+    }
+    if (map.current.getLayer('circle-outline')) {
+      map.current.removeLayer('circle-outline');
+    }
+    if (map.current.getSource('circle')) {
       map.current.removeSource('circle');
     }
 
