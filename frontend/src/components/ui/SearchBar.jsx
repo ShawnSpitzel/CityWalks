@@ -4,24 +4,28 @@ import Search from "../form/Search.jsx";
 export default function SearchBar() {
   const [cityName, setCityName] = useState("");
   const [distance, setDistance] = useState("");
+  const [results, setResults] = useState(null);
 
   // Handles changes within the search bar
   const handleChange = (e) => {
     setCityName(e.target.value);
   };
 
-    // Handles changes for the dropdown
+  // Handles changes for the dropdown
   const handleValue = (e) => {
     setDistance(e.target.value);
   };
 
-  const fetchWalkability = async() => {
-    const response = await fetch(`/walkability?city=${encodeURIComponent(cityName)}&radius=${encodeURIComponent(distance)}`);
+  async function fetchWalkability() {
+    const response = await fetch(`/walkability?city=${encodeURIComponent(cityName)}&state=CT&radius=${encodeURIComponent(distance)}`);
     const data = await response.json();
-    console.log(data)
+    console.log(JSON.stringify(data))
+    document.getElementById('results').innerText = JSON.stringify(data, null, 2);
+    updateWalkScoreWidget(city, state);
 }
-  // Console logs the inputted values
-  const onSubmit = (e) => {
+  // Handles the form submission
+  const onSubmit = async (e) => {
+    
     e.preventDefault();
     fetchWalkability();
     console.log(cityName);

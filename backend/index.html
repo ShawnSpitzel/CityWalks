@@ -11,6 +11,7 @@
             const radius = document.getElementById('radius').value;
             const response = await fetch(`/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${encodeURIComponent(radius)}`);
             const data = await response.json();
+            console.log(JSON.stringify(data))
             document.getElementById('results').innerText = JSON.stringify(data, null, 2);
             updateWalkScoreWidget(city, state);
         }
@@ -36,25 +37,6 @@
             widgetDiv.appendChild(scriptSrc);
         }
     </script>
-    <style>
-        #container {
-            display: flex;
-        }
-        #form-container {
-            flex: 1;
-        }
-        #results {
-            flex: 2;
-            margin-left: 20px;
-        }
-        #ws-walkscore-tile {
-            position: relative;
-            text-align: left;
-        }
-        #ws-walkscore-tile * {
-            float: none;
-        }
-    </style>
 </head>
 <body>
     <h1>Walkability Index</h1>
