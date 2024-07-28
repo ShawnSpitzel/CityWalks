@@ -16,7 +16,7 @@ const SearchBar = ({ onSearch }) => {
         type="text"
         value={cityState}
         onChange={(e) => setCityState(e.target.value)}
-        placeholder="Enter City and State"
+        placeholder="Enter City and State (e.g., Syracuse, NY)"
         required
       />
       <select value={radius} onChange={(e) => setRadius(e.target.value)} required>
