@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-const geolib = require('geolib'); // Importing the geolib package
+const geolib = require('geolib');
 const app = express();
 const port = process.env.PORT || 3000;
 const citiesDb = new sqlite3.Database('./us_cities.db');
 const walkabilityDb = new sqlite3.Database('./walkability.db');
+const cors = require('cors');
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -32,14 +34,14 @@ app.get('/walkability', async (req, res) => {
     console.log(`Nearby Cities: ${JSON.stringify(nearbyCities)}`);
 
     // Fetch walkability index for each city
-    const walkabilityIndexes = await Promise.all(
+    const citiesWithWalkability = await Promise.all(
       nearbyCities.map(async city => {
         const index = await fetchWalkabilityIndex(city.lat, city.lng);
-        return { city: city.name, state: city.state, lat: city.lat, lon: city.lng, walkability_index: index };
+        return { ...city, walkability_index: index };
       })
     );
 
-    res.json(walkabilityIndexes);
+    res.json(citiesWithWalkability);
   } catch (error) {
     console.error('Error fetching walkability indexes:', error);
     res.status(500).json({ error: 'Failed to fetch walkability indexes' });
@@ -59,8 +61,8 @@ async function fetchWalkabilityIndex(lat, lon) {
     `;
     
     // Calculate a dynamic range based on the latitude
-    const latRange = 10; // This can be adjusted to a smaller number if your data points are close together
-    const lonRange = 10; // This can be adjusted to a smaller number if your data points are close together
+    const latRange = 1000;
+    const lonRange = 1000;
 
     walkabilityDb.get(query, [lat - latRange, lat + latRange, lon - lonRange, lon + lonRange, lat, lon], (err, row) => {
       if (err) {

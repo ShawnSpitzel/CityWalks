@@ -15,7 +15,10 @@ const App = () => {
         alert('Please enter a valid city and state separated by a comma.');
         return;
       }
-      const response = await fetch(`http://localhost:3000/cities?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${radius}`);
+      const response = await fetch(`http://localhost:3000/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${radius}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
       const data = await response.json();
       console.log('API Response:', data);
 
@@ -37,11 +40,11 @@ const App = () => {
   };
 
   return (
-    <div id="container">
-      <div id="form-container">
+    <div id="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <div id="form-container" style={{ flex: '0 0 auto' }}>
         <SearchBar onSearch={handleSearch} />
       </div>
-      <div id="map-container">
+      <div id="map-container" style={{ flex: '1 1 auto' }}>
         <Map coordinates={coordinates} radius={radius} cities={cities} />
       </div>
     </div>

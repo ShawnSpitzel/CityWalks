@@ -94,13 +94,23 @@ const Map = ({ coordinates, radius, cities }) => {
     // Add markers for cities
     cities.forEach(city => {
       console.log(`Adding marker for city: ${city.name}, ${city.state} at (${city.lat}, ${city.lng})`);
-      new mapboxgl.Marker()
+      const marker = new mapboxgl.Marker()
         .setLngLat([city.lng, city.lat])
-        .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(`${city.name}, ${city.state}`))
-        .addTo(map.current)
-        .on('add', () => {
-          console.log(`Marker added for city: ${city.name}, ${city.state}`);
-        });
+        .addTo(map.current);
+
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <div>
+          <h3>${city.name}, ${city.state}</h3>
+          <p>Walkability Index: ${city.walkability_index !== null ? city.walkability_index : 'N/A'}</p>
+        </div>
+      `);
+
+      marker.getElement().addEventListener('click', () => {
+        popup.addTo(map.current);
+        marker.togglePopup(); // Open the popup on marker click
+      });
+
+      marker.setPopup(popup);
     });
   }, [cities]);
 
