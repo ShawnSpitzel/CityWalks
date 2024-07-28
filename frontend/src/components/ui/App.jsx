@@ -15,7 +15,7 @@ const App = () => {
         alert('Please enter a valid city and state separated by a comma.');
         return;
       }
-      const response = await fetch(`http://localhost:3000/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${radius}`);
+      const response = await fetch(`http://localhost:4000/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${radius}`);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
