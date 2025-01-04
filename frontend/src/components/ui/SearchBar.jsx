@@ -23,7 +23,7 @@ const SearchBar = ({ onSearch }) => {
         <option value="5">5 miles</option>
         <option value="10">10 miles</option>
         <option value="20">20 miles</option>
-        <option value="50">50 miles</option>
+        <option value="50">50 miles</option>  
       </select>
       <button type="submit">Search</button>
     </form>
