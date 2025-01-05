@@ -14,7 +14,7 @@ CityWalks was developed as part of the Headstarter Hackathon. Our goal was to cr
 ## Technologies Used
 
 - **Frontend**: React
-- **Backend**: Express.js
+- **Backend**: Express.js, SQLite3
 - **API**: Walk Score API
 
 ## Goals
