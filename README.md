@@ -1,19 +1,20 @@
 # CityWalks
 
-CityWalks is an interactive tool designed to provide detailed insights into the walkability of various cities. It helps users make informed decisions about traveling or moving based on a city's walkability score.
+WalkMap is an interactive tool designed to provide detailed insights into the walkability of various cities. It helps users make informed decisions about traveling or moving based on a city's walkability score.
 
 ## Project Overview
 
-CityWalks was developed as part of the Headstarter Hackathon. Our goal was to create an accessible resource for prospective travelers, home buyers, and anyone interested in the walkability of different cities. By leveraging modern web technologies, we built a user-friendly platform that offers interactive maps and walkability scores.
+WalkMap was developed as part of the Headstarter Hackathon. Our goal was to create an accessible resource for prospective travelers, home buyers, and anyone interested in the walkability of different cities. By leveraging modern web technologies, we built a user-friendly platform that offers interactive maps and walkability scores.
 
 ## Key Features
 
 - **Interactive Map**: Explore different cities and neighborhoods through our dynamic map interface.
+- **Search and Filture** Search cities up by name and filter by radius to see all scores encompassing the area.
 - **Walkability Scores**: Get detailed walkability scores for various areas, allowing easy comparison and decision-making.
 
 ## Technologies Used
 
-- **Frontend**: React
+- **Frontend**: React.js
 - **Backend**: Express.js, SQLite3
 - **API**: Walk Score API
 
