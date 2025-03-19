@@ -9,7 +9,7 @@ WalkMap was developed as part of the Headstarter Hackathon. Our goal was to crea
 ## Key Features
 
 - **Interactive Map**: Explore different cities and neighborhoods through our dynamic map interface.
-- **Search and Filture** Search cities up by name and filter by radius to see all scores encompassing the area.
+- **Search and Filter** Search cities up by name and filter by radius to see all scores encompassing the area.
 - **Walkability Scores**: Get detailed walkability scores for various areas, allowing easy comparison and decision-making.
 
 ## Technologies Used
