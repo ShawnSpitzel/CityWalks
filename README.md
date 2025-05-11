@@ -26,7 +26,7 @@ WalkMap was developed as part of the Headstarter Hackathon. Our goal was to crea
 
 ## Demo
 
-https://youtu.be/ZXDChFQySpU?si=-kwcq884cQ-_x71P
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/kwcq884cQ-_x71P/0.jpg)](https://www.youtube.com/watch?v=kwcq884cQ-_x71P)
 
 ## Meet the Team
 
