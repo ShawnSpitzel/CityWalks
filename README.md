@@ -24,6 +24,10 @@ WalkMap was developed as part of the Headstarter Hackathon. Our goal was to crea
 - Help users make informed decisions about travel and relocation.
 - Offer detailed and accurate walkability scores through an interactive map.
 
+## Demo
+
+https://youtu.be/ZXDChFQySpU?si=-kwcq884cQ-_x71P
+
 ## Meet the Team
 
 - **Jasper Cheng**: [LinkedIn](https://www.linkedin.com/in/jaspercheng10/)
