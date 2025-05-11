@@ -25,8 +25,7 @@ WalkMap was developed as part of the Headstarter Hackathon. Our goal was to crea
 - Offer detailed and accurate walkability scores through an interactive map.
 
 ## Demo
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/si/-kwcq884cQ-_x71P/0.jpg)](https://www.youtube.com/watch?si=-kwcq884cQ-_x71P)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/ZXDChFQySpU/0.jpg)](https://www.youtube.com/watch?v=ZXDChFQySpU)
 
 ## Meet the Team
 
