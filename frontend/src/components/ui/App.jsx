@@ -6,6 +6,7 @@ const App = () => {
   const [coordinates, setCoordinates] = useState({ lat: 40.730610, lng: -73.935242 }); // Default to New York City
   const [radius, setRadius] = useState(0);
   const [cities, setCities] = useState([]);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
   const handleSearch = async (cityState, radius) => {
     try {
@@ -15,7 +16,7 @@ const App = () => {
         alert('Please enter a valid city and state separated by a comma.');
         return;
       }
-      const response = await fetch(`http://localhost:4000/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${radius}`);
+      const response = await fetch(`${API_BASE_URL}/walkability?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&radius=${radius}`);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
