@@ -25,13 +25,10 @@ app.get('/walkability', async (req, res) => {
   }
 
   try {
-    // Get coordinates for the city
     const cityCoords = await getCityCoordinates(city, state);
-    console.log(`City Coordinates: ${JSON.stringify(cityCoords)}`);
 
     // Get all cities within the radius
     const nearbyCities = await getNearbyCities(cityCoords, radius);
-    console.log(`Nearby Cities: ${JSON.stringify(nearbyCities)}`);
 
     // Fetch walkability index for each city
     const citiesWithWalkability = await Promise.all(
@@ -77,7 +74,6 @@ async function fetchWalkabilityIndex(lat, lon) {
 
 // Function to get city coordinates using the cities database
 async function getCityCoordinates(city, state) {
-  console.log(`Querying coordinates for city: ${city}, state: ${state}`);
   return new Promise((resolve, reject) => {
     citiesDb.get('SELECT latitude, longitude FROM cities WHERE LOWER(city) = LOWER(?) AND (LOWER(state_code) = LOWER(?) OR LOWER(state_name) = LOWER(?)) LIMIT 1', [city, state, state], (err, row) => {
       if (err) {
