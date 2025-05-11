@@ -4,7 +4,7 @@ WalkMap is an interactive tool designed to provide detailed insights into the wa
 
 ## Project Overview
 
-WalkMap was developed as part of the Headstarter Hackathon. Our goal was to create an accessible resource for prospective travelers, home buyers, and anyone interested in the walkability of different cities. By leveraging modern web technologies, we built a user-friendly platform that offers interactive maps and walkability scores.
+Our goal was to create an accessible resource for prospective travelers, home buyers, and anyone interested in the walkability of different cities. By leveraging modern web technologies, we built a user-friendly platform that offers interactive maps and walkability scores.
 
 ## Key Features
 
